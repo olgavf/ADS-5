@@ -1,13 +1,5 @@
 #include <cassert>
 
-#pragma once
-
-struct SYM
-{
-    char ch;
-    int  prior;
-};
-
 template<typename T>
 class TPQueue
 {
@@ -16,7 +8,6 @@ class TPQueue
     {
         T data;
         ITEM* next;
-        ITEM* previous;
     };
 public:
     TPQueue() :head(nullptr), tail(nullptr) {}
@@ -27,9 +18,9 @@ public:
 private:
     TPQueue::ITEM* create(const T&);
     ITEM* head;
+    ITEM* u;
     ITEM* tail;
 };
-
 template<typename T>
 typename TPQueue<T>::ITEM* TPQueue<T>::create(const T& data)
 {
@@ -38,64 +29,81 @@ typename TPQueue<T>::ITEM* TPQueue<T>::create(const T& data)
     item->next = nullptr;
     return item;
 }
-
-struct SYM
 template<typename T>
 TPQueue<T>::~TPQueue()
 {
-	char ch;
-	int  prior;
-}; 
     while (head)
         pop();
 }
-
 template<typename T>
-void TPQueue<T>::push(const T& dat)
+void TPQueue<T>::push(const T& inf)
 {
     if (head == nullptr)
     {
-        head = create(dat);
+        head = create(inf);
+        u = head;
         tail = head;
     }
-    else if (tail->data.prior >= dat.prior)
+    else if (tail->data.prior >= inf.prior)
     {
-        if (tail->data.ch == dat.ch)
-            tail->data = dat;
+
+        if (tail->data.prior == inf.prior && tail->data.ch == inf.ch)
+        {
+
+            tail->data = inf;
+
+        }
         else
         {
-            tail->next = create(dat);
-            tail->next->previous = tail;
-            tail = tail->next;
+            if (tail->data.prior >= inf.prior && tail->data.ch != inf.ch)
+            {
+                tail->next = create(inf);
+                tail = tail->next;
+            }
         }
-    }
-    else if (head == tail)
-    {
-        tail->previous = create(dat);
-        head = tail->previous;
-        head->next = tail;
     }
     else
     {
-        ITEM* tmp = tail;
-        while (tmp != head && tmp->data.prior < dat.prior)
+
+        if (tail->data.prior < inf.prior)
         {
-            tmp = tmp->previous;
-        }
-        if (tmp->data.prior == dat.prior)
-        {
-            ITEM* cell = new ITEM;
-            cell->next = tmp->next;
-            cell->previous = tmp;
-            cell->data = dat;
-            tmp->next->previous = cell;
-            tmp->next = cell;
-        }
-        if (tmp == head && tmp->data.prior < dat.prior)
-        {
-            head->previous = create(dat);
-            head = head->previous;
-            head->next = tmp;
+            if (inf.prior > head->data.prior)
+            {
+                ITEM* tmp = NULL;
+                tmp = create(inf);
+                tmp->next = head;
+                head = tmp;
+            }
+            else
+
+                if (inf.prior == head->data.prior)
+
+                    if (inf.ch == head->data.ch)
+                        head->data = inf;
+                    else
+                    {
+                        ITEM* u = nullptr;
+                        u = create(inf);
+                        u->next = head->next;
+                        head->next = u;
+
+                    }
+
+                else
+                {
+                    if (inf.prior < head->data.prior)
+                    {
+                        ITEM* u = nullptr;
+                        u = create(inf);
+                        u->next = head->next;
+                        head->next = u;
+                    }
+                }
+
+
+
+
+
         }
     }
 }
@@ -111,21 +119,30 @@ T TPQueue<T>::pop()
         head = temp;
         return data;
     }
-    else
-    {
-        return SYM{'\0', 0};
-    }
-}
 
+}
 template<typename T>
-void TPQueue<T>::print() const
+void TPQueue<T>::print() const	
 {
-    ITEM* temp = head;
-    while (temp)
     {
-        std::cout << temp->data.ch << " ";
-        temp = temp->next;
+        ITEM* temp = head;	    
+        while (temp)	 
+        {
+            {
+                std::cout << temp->data << " ";	        
+                temp = temp->next;	       
+            }
+        }
+        std::cout << std::endl;	    std::cout << std::endl;
     }
-    std::cout << std::endl;
 }
 
+struct SYM
+{
+	char ch;
+	int  prior;
+}; 
+    char ch;
+    int prior;
+    SYM* next;
+};
